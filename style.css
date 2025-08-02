@@ -1,0 +1,219 @@
+:root {
+  /* DARK THEME */
+  --bg: #0b0b0b;
+  --text: #f3f4f6;
+  --muted: #9ca3af;
+  --accent: #38bdf8;
+
+  --surface: #161616;
+  --surface-hover: #1e1e1e;
+  --bar-bg: #0f0f10;
+  --bar-border: #202124;
+
+  --shadow: 0 1px 3px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.35);
+  --ripple: rgba(255,255,255,0.15);
+
+  --radius: 14px;
+  --danger: #ef4444;
+  --bar-height: 64px;
+
+  /* Layout spacing */
+  --page-hpad: 16px;
+}
+
+/* ===== Reset ringkas ===== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Konten utama ===== */
+.app-content {
+  min-height: 100%;
+  padding: var(--page-hpad);
+  padding-bottom: calc(var(--bar-height) + env(safe-area-inset-bottom, 0px) + var(--page-hpad));
+}
+
+/* (Opsional) Batasi lebar agar rapi di layar besar.
+   Tidak wajib ada elemen .container di HTML; jika ada akan dipakai. */
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* ===== Judul tiap tab ===== */
+.tab-pane h1,
+.page-title {
+  margin: 4px 0 14px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+/* ===== Grid tombol (rapi seperti sebelumnya) =====
+   - Default: 3 kolom (mirip tampilan awal)
+   - Di layar sedang: 2 kolom
+   - Di layar kecil: 1 kolom
+*/
+.grid-btns {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Responsif */
+@media (max-width: 900px) {
+  .grid-btns { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 420px) {
+  .grid-btns { grid-template-columns: 1fr; }
+}
+
+/* ===== Tombol kotak / kartu ===== */
+.app-button {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 14px 10px;
+  min-height: 106px; /* seragam & rapi */
+  border: 1px solid #232326;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.app-button:hover { background: var(--surface-hover); }
+.app-button:active { transform: scale(.985); }
+.app-button i, .app-button svg { width: 24px; height: 24px; }
+.app-button span { font-size: 13px; line-height: 1.2; }
+
+/* ===== Tab dasar + transisi halus (tanpa flicker) ===== */
+.tab-pane {
+  display: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.tab-pane.is-active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Bottom bar ===== */
+.bottom-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: calc(var(--bar-height) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bar-bg);
+  border-top: 1px solid var(--bar-border);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: stretch;
+  z-index: 50;
+}
+
+/* Item bar */
+.bar-item {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 6px 4px 8px;
+  display: grid;
+  grid-template-rows: auto auto;
+  place-items: center;
+  gap: 4px;
+  font: inherit;
+  color: var(--muted);
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.bar-item i, .bar-item svg { width: 22px; height: 22px; }
+.bar-item span {
+  font-size: 12px;
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-item.is-active { color: var(--accent); }
+
+/* Ripple sederhana (untuk .bar-item; tombol lain di-handle JS) */
+.bar-item .ripple {
+  position: absolute; inset: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  transform: scale(0);
+  opacity: 0;
+  background: var(--ripple);
+}
+.bar-item:active .ripple { animation: ripple .35s ease-out; }
+@keyframes ripple {
+  from { transform: scale(0); opacity: .35; }
+  to   { transform: scale(1); opacity: 0; }
+}
+
+/* ===== iFrame embed (Jadwal) =====
+   Gunakan dvh agar stabil di mobile (address bar dinamis) */
+.embed {
+  width: 100%;
+  height: calc(100dvh - var(--bar-height) - 160px); /* header + padding + bottom bar */
+  max-height: 85dvh;
+  border: 0;
+  background: #111;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+/* ===== Loader sederhana (Jadwal) ===== */
+.loader {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--bar-border);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 0 0 10px;
+}
+.loader .spinner {
+  width: 26px; height: 26px;
+  border: 3px solid rgba(255,255,255,.25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+.loader .loader-text { color: var(--muted); font-size: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Hint text ===== */
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* ===== Tipografi kecil ===== */
+@media (max-width: 720px) {
+  .tab-pane h1, .page-title { font-size: 19px; }
+  .app-button { min-height: 100px; }
+}
+
+/* ===== Aksesibilitas: preferensi kurangi animasi ===== */
+@media (prefers-reduced-motion: reduce) {
+  .tab-pane { transition: none; }
+  .bar-item:active .ripple { animation: none; }
+}
